@@ -1,0 +1,25 @@
+{
+
+    "manifest_version": 3,
+
+    "name" : "PostQuantum",
+    "description" : "Allows users to easily use OTP encryption so as to be unbreakable by quantum computers.",
+    "version" : "0.2.0",
+
+    "permissions" : ["contextMenus", "storage", "fileSystem"],
+    "host_permissions" : ["<all_urls>"],
+
+    "content_scripts" : [{
+
+        "matches" : ["<all_urls>"],
+        "js" : ["main.js"]
+
+    }],
+
+    "background" : {
+
+        "service_worker" : "background.js"
+
+    }
+
+}
