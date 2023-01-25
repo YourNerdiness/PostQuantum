@@ -92,13 +92,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
             if (request.encrypt) {
 
-                toReplace = await encrypt(request.text);
+                toReplace = await encrypt(request.text, "a1a1a1a1a1a1a1a1a1a11a1aa1aa1a1a1a1a1a1a1a1");
     
             }
     
             else {
     
-                toReplace = decrypt(request.text);
+                toReplace = decrypt(request.text, "a1a1a1a1a1a1a1a1a1a11a1aa1aa1a1a1a1a1a1a1a1");
     
             }
 
@@ -106,11 +106,17 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
         catch (error) {
 
+            console.log(error);
+
             alert(error);
 
             return;
 
         }
+
+        chrome.runtime.sendMessage({message: "write_to_file", key: "3u48832u4"}, function(response) {
+            alert(response.message);
+          });
 
         const range = document.getSelection().getRangeAt(0);
         range.deleteContents();
