@@ -6,7 +6,7 @@
     "description" : "Allows users to easily use OTP encryption so as to be unbreakable by quantum computers.",
     "version" : "0.2.0",
 
-    "permissions" : ["contextMenus", "storage", "fileSystem"],
+    "permissions" : ["contextMenus", "storage"],
     "host_permissions" : ["<all_urls>"],
 
     "icons": {
