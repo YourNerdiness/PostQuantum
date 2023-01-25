@@ -8,7 +8,7 @@ const encrypt = async (plaintext, key) => {
 
     else {
 
-        const result = await chrome.storage.local.get(["postQuantumKeyIndex"])
+        const result = await chrome.storage.local.get(["postQuantumKeyIndex"]);
 
         let keyIndex = result.postQuantumKeyIndex;
 
@@ -104,7 +104,9 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
         chrome.runtime.sendMessage({ messageID : 1 }, async (response) => {
 
-            const key = await response.key;
+            const key = await response;
+
+            console.log(key);
 
             if (key) {
 
@@ -135,6 +137,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                 const range = document.getSelection().getRangeAt(0);
                 range.deleteContents();
                 range.insertNode(document.createTextNode(toReplace));
+
+            }
+
+            else {
+                
+                alert("Your key needs to be loaded every time you restart chrome, please reload your key.")
 
             }
 
