@@ -3,7 +3,7 @@
     "manifest_version": 3,
 
     "name" : "PostQuantum",
-    "description" : "Allows users to easily use OTP encryption so as to be unbreakable by quantum computers.",
+    "description" : "Encrypt your important messages using OTP, an algorithm that even quantum computers can't break.",
     "version" : "1.0.0",
 
     "permissions" : ["contextMenus", "storage"],
