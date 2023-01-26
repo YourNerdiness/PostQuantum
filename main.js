@@ -102,11 +102,9 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
         let toReplace;
 
-        chrome.runtime.sendMessage({ messageID : 1 }, async (response) => {
+        chrome.runtime.sendMessage({ messageID : 1, createNewKey : false }, async (response) => {
 
-            const key = await response;
-
-            console.log(key);
+            const key = response.response.postQuantumKey;
 
             if (key) {
 

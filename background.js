@@ -24,7 +24,7 @@ chrome.contextMenus.onClicked.addListener((info) => {
 
     if ((info.menuItemId == "0" || info.menuItemId  == "1") && info.editable) {
 
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 
             chrome.tabs.sendMessage(tabs[0].id, { messageID : 0, encrypt : info.menuItemId == "0", text : info.selectionText }, () => {});
 
@@ -34,18 +34,32 @@ chrome.contextMenus.onClicked.addListener((info) => {
 
 });
 
-chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.messageID != 1) {
 
         return;
 
-    } 
+    }
 
-    const key = (await chrome.storage.session.get(["postQuantumKey"])).key;
+    if (request.createNewKey) {
 
-    console.log(key)
-        
-    sendResponse({ key });
+        chrome.storage.session.set({ "postQuantumKey" : request.key });
+
+        sendResponse({ ok : true }); 
+
+    }
+
+    else {
+
+        chrome.storage.session.get(["postQuantumKey"]).then((response) => {
+
+            sendResponse({ response });
+
+        });
+
+        return true;
+
+    }
 
 });

@@ -22,16 +22,18 @@
             
             <p class="center">PostQuantum uses an encryption algorithm called OTP or One Time Pad to encrypt your important messages. It is mathematically impossible to see the text behind this layer of encryption, no matter how much computational power you have, or even if you have a quantum computer. We combine this encryption with something called an HMAC, meaning that not only can your message not be seen, it can also not be tampered with without you knowing about it.</p>
 
-            <p class="center">The catch? well, with OTP you need a very large secret, or "key", to be able to encrypt your message. This key must be shared with whoever you intend to decrypt your message. To do this, get a new key by clicking the "Get a New Key" button, then copy that file to a USB so that the recipient of your message can copy it onto their computer. DO NOT SEND THIS KEY OVER THE INTERNET, only give it to them by physical transfer. Once the recipient has the key, they can click the "Load Key" button below, to load the key into their browser until they restart chrome.</p>
+            <p class="center">The catch? well, with OTP you need a very large file (keys can be other things but I'm calling it a file for simplicity), or "key", to be able to encrypt your message. This key must be kept secret and only shared with whoever you intend to decrypt your message. To do this, get a new key by clicking the "Get a New Key" button, then copy that file to a USB so that the recipient of your message can copy it onto their computer. DO NOT SEND THIS KEY OVER THE INTERNET, only give it to them by physical transfer. Once the recipient has the key, they can click the "Load Key" button below, to load the key into their browser until they restart chrome.</p>
         
         </main>
 
         <div id="keyOps" class="center">
 
-            <button>Get a New Key</button>
-            <button>Load Key</button>
+            <button id="newKey">Get a New Key</button>
+            <button id="loadKey">Load Key</button>
 
         </div>
+
+        <input id="loadKeyInput" type="file" accept=".txt" style="display: none;">
 
     </body>
 
