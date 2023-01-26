@@ -1,0 +1,26 @@
+body {
+
+    width: 256px;
+
+    background-image: url("faded-icon.png");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+}
+
+p {
+
+    font-size: 10px;
+
+}
+
+.center {
+
+    display: flex;
+
+    justify-content: center;
+
+    text-align: center;
+
+}
