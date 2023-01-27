@@ -1,4 +1,4 @@
-const encrypt = async (plaintext, key) => {
+const encrypt = async (plaintext, key, keyName) => {
 
     if (plaintext.length > key.length/8) {
 
@@ -8,14 +8,13 @@ const encrypt = async (plaintext, key) => {
 
     else {
 
-        const result = await chrome.storage.local.get(["postQuantumKeyIndex"]);
+        const result = await chrome.storage.local.get(["postQuantumKeyIndex" + encodeURIComponent(keyName)]);
 
         let keyIndex = result.postQuantumKeyIndex;
 
         if (keyIndex === undefined) {
 
             keyIndex = 0;
-
 
         }
 
@@ -36,10 +35,6 @@ const encrypt = async (plaintext, key) => {
             else {
 
                 let encryptedCharCode = charCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
-
-                keyIndex += usedKeyLength;
-
-                encryptedCharCode = encryptedCharCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
 
                 keyIndex += usedKeyLength;
 
@@ -85,10 +80,6 @@ const decrypt = (ciphertextRaw, key) => {
             const usedKeyLength = 8;
     
             let charCode = encryptedCharCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
-    
-            keyIndex += usedKeyLength;
-    
-            charCode = charCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
     
             keyIndex += usedKeyLength;
     
