@@ -62,31 +62,43 @@ const decrypt = (ciphertextRaw, key) => {
 
     const ciphertextData = ciphertextRaw.split(";");
 
-    let keyIndex = parseInt(ciphertextData[0], 10);
+    if (ciphertextData.length != 3 || !ciphertextData[0] || !ciphertextData[1] || !ciphertextData[2]) {
 
-    const ciphertext = ciphertextData[1].split(",");
-
-    let plaintext = "";
-
-    for (let i = 0; i < ciphertext.length; i++) {
-
-        const encryptedCharCode = parseInt(ciphertext[i], 16);
-
-        const usedKeyLength = 8;
-
-        let charCode = encryptedCharCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
-
-        keyIndex += usedKeyLength;
-
-        charCode = charCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
-
-        keyIndex += usedKeyLength;
-
-        plaintext += String.fromCharCode(charCode);
+        throw  "Selected text is not valid ciphertext. Make sure you have selected the entire message."
 
     }
 
-    return plaintext;
+    else {
+
+        let keyIndex = parseInt(ciphertextData[0], 10);
+
+        const ciphertext = ciphertextData[1].split(",");
+
+        const encryptedHMAC = ciphertext[2].split(",");
+    
+        let plaintext = "";
+    
+        for (let i = 0; i < ciphertext.length; i++) {
+    
+            const encryptedCharCode = parseInt(ciphertext[i], 16);
+    
+            const usedKeyLength = 8;
+    
+            let charCode = encryptedCharCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
+    
+            keyIndex += usedKeyLength;
+    
+            charCode = charCode ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
+    
+            keyIndex += usedKeyLength;
+    
+            plaintext += String.fromCharCode(charCode);
+    
+        }
+    
+        return plaintext;
+
+    }
 
 };
 
