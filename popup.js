@@ -4,7 +4,7 @@ const newKey = () => {
 
     let key = "";
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 4; i++) {
 
         const array = new BigUint64Array(8192);
         self.crypto.getRandomValues(array);
@@ -46,7 +46,7 @@ const loadFile = (event) => {
 
     fr.onload = () => {
 
-        chrome.runtime.sendMessage({ messageID : 1, createNewKey : true, key : fr.result }, (response) => {});
+        chrome.runtime.sendMessage({ messageID : 1, createNewKey : true, key : fr.result, keyName : event.target.files[0].name.split(".")[0] }, (response) => {});
 
     };
 

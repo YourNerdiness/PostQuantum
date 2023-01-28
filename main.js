@@ -1,16 +1,16 @@
 const encrypt = async (plaintext, key, keyName) => {
 
-    if (plaintext.length > key.length/8) {
+    if (plaintext.length > key.length/8 + 128) {
 
-        throw "Plaintext length is greater than key length, this intruduces weakeness into the cipher. Please try a shorter length of text."
+        throw "Key has expired, please change key.";
 
     }
 
     else {
 
-        const result = await chrome.storage.local.get(["postQuantumKeyIndex" + encodeURIComponent(keyName)]);
+        const result = await chrome.storage.local.get(["postQuantumKeyIndex-" + encodeURIComponent(keyName)]);
 
-        let keyIndex = result.postQuantumKeyIndex;
+        let keyIndex = result["postQuantumKeyIndex-" + encodeURIComponent(keyName)];
 
         if (keyIndex === undefined) {
 
@@ -26,7 +26,7 @@ const encrypt = async (plaintext, key, keyName) => {
 
             const usedKeyLength = 8;
 
-            if (keyIndex + usedKeyLength*2 >= key.length) {
+            if (keyIndex + usedKeyLength + 128 >= key.length) {
 
                 throw "Key has expired, please change key.";
 
@@ -44,8 +44,45 @@ const encrypt = async (plaintext, key, keyName) => {
                 
 
         }
+
+        ciphertext += ";";
+
+        const encodedPlaintext = new TextEncoder().encode(plaintext);
+
+        const digest = await crypto.subtle.digest("SHA-512", encodedPlaintext);
+
+        const digestArray = Array.from(new Uint8Array(digest));
+
+        for (let i = 0; i < digestArray.length; i++) {
+
+            const hashNum = digestArray[i];
+
+            const usedKeyLength = 2;
+
+            if (keyIndex + usedKeyLength >= key.length) {
+
+                throw "Key has expired, please change key.";
+
+            }
+
+            else {
+
+                let encryptedHashNum = hashNum ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
+
+                keyIndex += usedKeyLength;
+
+                ciphertext += encryptedHashNum.toString(16) + (i == digestArray.length - 1 ? "" : ",");
+
+            }
+                
+
+        }
+
+        const setReq = {};
+
+        setReq["postQuantumKeyIndex-" + encodeURIComponent(keyName)] = keyIndex;
         
-        await chrome.storage.local.set({ postQuantumKeyIndex : keyIndex });
+        await chrome.storage.local.set(setReq);
 
         return ciphertext;
 
@@ -53,7 +90,7 @@ const encrypt = async (plaintext, key, keyName) => {
 
 }
 
-const decrypt = (ciphertextRaw, key) => {
+const decrypt = async (ciphertextRaw, key) => {
 
     const ciphertextData = ciphertextRaw.split(";");
 
@@ -69,7 +106,9 @@ const decrypt = (ciphertextRaw, key) => {
 
         const ciphertext = ciphertextData[1].split(",");
 
-        const encryptedHMAC = ciphertext[2].split(",");
+        const encryptedDigest = ciphertextData[2].split(",");
+
+        console.log(encryptedDigest);
     
         let plaintext = "";
     
@@ -85,6 +124,40 @@ const decrypt = (ciphertextRaw, key) => {
     
             plaintext += String.fromCharCode(charCode);
     
+        }
+
+        const encodedPlaintext = new TextEncoder().encode(plaintext);
+
+        const digest = await crypto.subtle.digest("SHA-512", encodedPlaintext);
+
+        const digestArray = Array.from(new Uint8Array(digest));
+
+        for (let i = 0; i < encryptedDigest.length; i++) {
+
+            const encryptedDigestNum = parseInt(encryptedDigest[i], 16);
+
+            const usedKeyLength = 2;
+
+            if (keyIndex + usedKeyLength >= key.length) {
+
+                throw "Key has expired, please change key.";
+
+            }
+
+            else {
+
+                let decryptedDigestNum = encryptedDigestNum ^ parseInt(key.substring(keyIndex, keyIndex + usedKeyLength), 16);
+
+                keyIndex += usedKeyLength;
+
+                if (decryptedDigestNum != digestArray[i]) {
+
+                    throw "Your message has been tampered with.";
+
+                };
+
+            }   
+
         }
     
         return plaintext;
@@ -103,31 +176,35 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
         }
 
-        let toReplace;
+        const keyName = encodeURIComponent(prompt("Please enter the name of your key: "));
 
-        chrome.runtime.sendMessage({ messageID : 1, createNewKey : false }, async (response) => {
+        chrome.runtime.sendMessage({ messageID : 1, createNewKey : false, keyName }, async (response) => {
 
-            const key = response.response.postQuantumKey;
+            const key = response.response["postQuantumKey-" + keyName];
 
             if (key) {
+
+                let toReplace;
 
                 try {
 
                     if (request.encrypt) {
         
-                        toReplace = await encrypt(request.text, key);
+                        toReplace = await encrypt(request.text, key, keyName);
             
                     }
             
                     else {
             
-                        toReplace = decrypt(request.text, key);
+                        toReplace = await decrypt(request.text, key);
             
                     }
         
                 }
         
                 catch (error) {
+
+                    console.log(error);
         
                     alert(error);
         
@@ -143,13 +220,11 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
             else {
                 
-                alert("Your key needs to be loaded every time you restart chrome, please reload your key.")
+                alert("You have not loaded that key yet. Please open the extension popup to load the key.")
 
             }
 
         });
-
-        
 
     }
 

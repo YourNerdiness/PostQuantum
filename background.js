@@ -44,7 +44,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     if (request.createNewKey) {
 
-        chrome.storage.session.set({ "postQuantumKey" : request.key });
+        const setReq = {};
+
+        setReq["postQuantumKey-" + request.keyName] = request.key;
+
+        chrome.storage.session.set(setReq);
 
         sendResponse({ ok : true }); 
 
@@ -52,7 +56,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     else {
 
-        chrome.storage.session.get(["postQuantumKey"]).then((response) => {
+        chrome.storage.session.get(["postQuantumKey-" + request.keyName]).then((response) => {
+
+            console.log(response);
 
             sendResponse({ response });
 
