@@ -6,7 +6,7 @@ const newKey = () => {
 
     for (let i = 0; i < 4; i++) {
 
-        const array = new BigUint64Array(8192);
+        const array = new BigUint64Array(4096);
         self.crypto.getRandomValues(array);
     
         for (const num of array) {
