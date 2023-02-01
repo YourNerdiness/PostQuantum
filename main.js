@@ -107,8 +107,6 @@ const decrypt = async (ciphertextRaw, key) => {
         const ciphertext = ciphertextData[1].split(",");
 
         const encryptedDigest = ciphertextData[2].split(",");
-
-        console.log(encryptedDigest);
     
         let plaintext = "";
     
@@ -159,6 +157,12 @@ const decrypt = async (ciphertextRaw, key) => {
             }   
 
         }
+
+        const setReq = {};
+
+        setReq["postQuantumKeyIndex-" + encodeURIComponent(keyName)] = keyIndex;
+        
+        await chrome.storage.local.set(setReq);
     
         return plaintext;
 
