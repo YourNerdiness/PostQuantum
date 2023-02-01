@@ -200,7 +200,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             
                     else {
             
-                        toReplace = await decrypt(request.text, key);
+                        toReplace = await decrypt(request.text, key, keyName);
             
                     }
         
