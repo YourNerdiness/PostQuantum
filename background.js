@@ -22,7 +22,7 @@ chrome.contextMenus.removeAll(() => {
 
 chrome.contextMenus.onClicked.addListener((info) => {
 
-    if ((info.menuItemId == "0" || info.menuItemId  == "1") && info.editable) {
+    if ((info.menuItemId == "0" || info.menuItemId  == "1") && (info.menuItemId == "0" && info.editable)) {
 
         chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
 
